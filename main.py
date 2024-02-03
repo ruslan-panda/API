@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 SCREEN_SIZE = [600, 450]
 
 
-
 class BigMap(QWidget):
     def __init__(self):
         super().__init__()
@@ -20,7 +19,7 @@ class BigMap(QWidget):
         except IndexError:
             self.lon = "39.573954"
             self.lat = "52.621706"
-            self.scale = 1
+            self.scale = 12
         self.initUI()
 
     def getImage(self):
@@ -45,6 +44,9 @@ class BigMap(QWidget):
     def initUI(self):
         self.setGeometry(100, 100, *SCREEN_SIZE)
         self.setWindowTitle('Отображение карты')
+        self.image = QLabel(self)
+        self.image.move(0, 0)
+        self.image.resize(600, 450)
         self.create_image()
 
     def closeEvent(self, event):
@@ -53,9 +55,6 @@ class BigMap(QWidget):
     def create_image(self):
         self.getImage()
         self.pixmap = QPixmap(self.map_file)
-        self.image = QLabel(self)
-        self.image.move(0, 0)
-        self.image.resize(600, 450)
         self.image.setPixmap(self.pixmap)
         self.update()
 
@@ -63,8 +62,9 @@ class BigMap(QWidget):
         if event.key() == Qt.Key_Up:
             self.scale = min(self.scale + 1, 21)
             self.create_image()
-
-
+        if event.key() == Qt.Key_Down:
+            self.scale = max(self.scale - 1, 0)
+            self.create_image()
 
 
 if __name__ == '__main__':
