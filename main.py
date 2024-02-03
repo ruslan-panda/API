@@ -2,19 +2,17 @@ import os
 import sys
 
 import requests
-import keyboard
-from multiprocessing import Process
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 
 SCREEN_SIZE = [600, 450]
 
 
-scale = 12
+
 class BigMap(QWidget):
     def __init__(self):
         super().__init__()
-        global scale
         try:
             self.lon = sys.argv[1]
             self.lat = sys.argv[2]
@@ -22,8 +20,7 @@ class BigMap(QWidget):
         except IndexError:
             self.lon = "39.573954"
             self.lat = "52.621706"
-            self.scale = scale
-        self.getImage()
+            self.scale = 1
         self.initUI()
 
     def getImage(self):
@@ -48,30 +45,29 @@ class BigMap(QWidget):
     def initUI(self):
         self.setGeometry(100, 100, *SCREEN_SIZE)
         self.setWindowTitle('Отображение карты')
+        self.create_image()
 
+    def closeEvent(self, event):
+        os.remove(self.map_file)
+
+    def create_image(self):
+        self.getImage()
         self.pixmap = QPixmap(self.map_file)
         self.image = QLabel(self)
         self.image.move(0, 0)
         self.image.resize(600, 450)
         self.image.setPixmap(self.pixmap)
+        self.update()
 
-    def closeEvent(self, event):
-        os.remove(self.map_file)
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Up:
+            self.scale = min(self.scale + 1, 21)
+            self.create_image()
 
 
-def par():
-    global scale
-    while True:
-        if keyboard.is_pressed("up"):
-            scale += 1
-            print(scale)
-            ex = BigMap()
-            ex.show()
-            keyboard.record("up")
 
 
 if __name__ == '__main__':
-    Process(target=par).start()
     app = QApplication(sys.argv)
     ex = BigMap()
     ex.show()
