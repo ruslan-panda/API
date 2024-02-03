@@ -2,6 +2,7 @@ import os
 import sys
 
 import requests
+import keyboard
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 
